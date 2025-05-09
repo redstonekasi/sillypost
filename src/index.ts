@@ -120,3 +120,9 @@ submit.addEventListener("click", async (e) => {
 		semaphore.release_();
 	}
 });
+
+const input = <HTMLTextAreaElement> document.getElementById("content");
+input.addEventListener("keydown", (ev) => {
+	if (!(ev.key === "Enter" && (ev.metaKey || ev.ctrlKey))) return;
+	submit.click();
+});

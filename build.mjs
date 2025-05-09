@@ -5,7 +5,7 @@ const meta = `
 // ==UserScript==
 // @name        sillypost userscript
 // @description automatic timeline updating, and more soon:tm:
-// @version     0.1.5
+// @version     0.1.6
 // @match       https://sillypost.net/
 // @downloadURL https://things.k6.tf/sillypost.user.js
 // ==/UserScript==
