@@ -2,7 +2,7 @@ class Semaphore {
 	private queue_: Function[] = [];
 	private lock_ = false;
 
-	acquire_(): Promise<void> {
+	acquire(): Promise<void> {
 		if (!this.lock_) {
 			this.lock_ = true;
 			return Promise.resolve();
@@ -11,7 +11,7 @@ class Semaphore {
 		}
 	}
 
-	release_(): void {
+	release(): void {
 		const resolve = this.queue_.shift();
 
 		if (resolve) {
@@ -21,12 +21,12 @@ class Semaphore {
 		}
 	}
 
-	async request_<T>(fn: Function): Promise<T> {
+	async request<T>(fn: Function): Promise<T> {
 		try {
-			await this.acquire_();
+			await this.acquire();
 			return await fn();
 		} finally {
-			this.release_();
+			this.release();
 		}
 	}
 }

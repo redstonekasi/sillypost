@@ -1,0 +1,43 @@
+#trade {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#status-area {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-img {
+    width: 16px;
+    height: 16px;
+    margin: 8px;
+}
+
+#silly-price, #sillies-owned {
+    animation: alert 1s infinite linear;
+}
+
+.soover {
+    color: #312a9c;
+}
+
+.inshambles {
+    color: #595b95;
+}
+
+.mid {
+    color: grey;
+}
+
+.soback {
+    color: #379c2a;
+}
+
+.swag {
+    animation: alert 1s infinite linear;
+}

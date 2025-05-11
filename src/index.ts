@@ -1,3 +1,4 @@
+import exchangeCss from "./exchange.css";
 import { Semaphore } from "./semaphore";
 
 const updateClickHandlers = (forms: Iterable<HTMLFormElement>) => {
@@ -75,7 +76,7 @@ window.addEventListener(
 
 const interval = 2000;
 setTimeout(async function loop() {
-	await semaphore.request_(updateTimeline);
+	await semaphore.request(updateTimeline);
 	setTimeout(loop, interval);
 }, interval);
 
@@ -89,7 +90,7 @@ submit.addEventListener("click", async (e) => {
 	submit.disabled = true;
 
 	try {
-		await semaphore.acquire_();
+		await semaphore.acquire();
 		const res = await fetch(form.action, {
 			method: "POST",
 			body: new FormData(form),
@@ -117,7 +118,7 @@ submit.addEventListener("click", async (e) => {
 		}
 	} finally {
 		submit.disabled = false;
-		semaphore.release_();
+		semaphore.release();
 	}
 });
 
@@ -126,3 +127,30 @@ input.addEventListener("keydown", (ev) => {
 	if (!(ev.key === "Enter" && (ev.metaKey || ev.ctrlKey))) return;
 	submit.click();
 });
+
+// todo: this is silly but just reimplement it
+!async function addExchange() {
+	const raw = await fetch("/games/sillyexchange").then((r) => r.text());
+	const doc = parser.parseFromString(raw, "text/html");
+
+	const area = document.getElementById("sillymarket-area")!;
+
+	for (const element of [...area.children].slice(1)) {
+		element.remove();
+	}
+
+	const style = document.createElement("style");
+	style.textContent = exchangeCss;
+	document.head.appendChild(style);
+
+	area.append(doc.getElementById("status-area")!, doc.getElementById("trade")!);
+
+	const script = document.createElement("script");
+	script.src = "/static/games/sillyexchange.js";
+	document.head.appendChild(script);
+
+	script.addEventListener("load", () => {
+		// @ts-ignore see above todo
+		updateStats(), setInterval(updateStats, 20000);
+	});
+}();
