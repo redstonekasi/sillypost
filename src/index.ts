@@ -25,6 +25,24 @@ const updateClickHandlers = (forms: Iterable<HTMLFormElement>) => {
 const parser = new DOMParser();
 const postsContainer = document.getElementById("posts")!;
 
+function updateDates(elements: Iterable<Element>) {
+	for (const el of elements) {
+		const match = el.textContent?.match(utcRegex);
+		if (!match) return;
+		const [, year, month, day, hour, minute] = match;
+		const date = Date.UTC(+year, +month, +day, +hour, +minute);
+		el.textContent = formatter.format(date);
+	}
+}
+
+const utcRegex = /(\d{4})-(\d{2})-(\d{2}) \(UTC(\d{2}):(\d{2})\)/;
+const dates = document.getElementsByClassName("post-date");
+const formatter = new Intl.DateTimeFormat(undefined, {
+	dateStyle: "short",
+	timeStyle: "short",
+});
+updateDates(dates);
+
 const getPosts = (doc: Document) => doc.querySelectorAll(".post");
 const getId = (post: Element) => post.querySelector<HTMLFormElement>(".ctform")!.action.split("/").at(-1);
 
@@ -49,6 +67,8 @@ const updateTimeline = async (doc?: Document) => {
 		postsContainer.prepend(...newPosts);
 		// Add click handlers to new posts
 		updateClickHandlers(newPosts.map((e) => e.querySelector<HTMLFormElement>(".ctform")!));
+		// Fix up dates to local time
+		updateDates(newPosts.map((e) => e.querySelector<HTMLFormElement>(".post-date")!));
 		offset = newPosts.length;
 	}
 
