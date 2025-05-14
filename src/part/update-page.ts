@@ -60,7 +60,7 @@ function reconcilePosts(doc: Document) {
 }
 
 async function update() {
-	const doc = await fetch(location.pathname)
+	const doc = await fetch(location.href)
 		.then((r) => r.text())
 		.then((t) => parser.parseFromString(t, "text/html"));
 
