@@ -69,6 +69,7 @@ const ctx = await esbuild.context({
 	entryPoints: ["./src/index.ts"],
 	outfile: "./dist/sillypost.user.js",
 	bundle: true,
+	minify: true,
 	plugins: [
 		metadata("metadata.txt"),
 		serve(8080, "/sillypost.user.js"),
