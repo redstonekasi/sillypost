@@ -13,9 +13,9 @@ const WITH_POSTS = [
 	r.GROUP_FEED,
 ];
 
-definePart(WITH_POSTS, () => fastCtform());
-definePart(WITH_POSTS, () => localDates());
-definePart([r.INDEX, r.GROUP_FEED], () => fastSubmit());
-definePart([r.GLOBAL], () => updatePage());
+definePart(WITH_POSTS, fastCtform);
+definePart(WITH_POSTS, localDates);
+definePart([r.INDEX, r.GROUP_FEED], fastSubmit);
+definePart([r.GLOBAL], updatePage);
 
 executeAllParts();

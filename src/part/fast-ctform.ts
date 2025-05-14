@@ -6,7 +6,6 @@ export default () =>
 		const [btn] = form.getElementsByTagName("button");
 		const [span] = form.getElementsByTagName("span");
 
-		// TODO: pause update-page until this submit is done, otherwise it might update in between
 		form.addEventListener("submit", async (ev) => {
 			ev.stopImmediatePropagation();
 			ev.preventDefault();
@@ -15,6 +14,7 @@ export default () =>
 
 			const original = span.innerText;
 			span.innerText = (+original + 1).toString();
+			span.dataset.scIgnore = "meow";
 			const res = await fetch(form.action, { method: "POST" });
 			if (!res.ok) {
 				span.innerText = original;

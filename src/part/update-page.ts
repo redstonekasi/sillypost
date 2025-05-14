@@ -20,6 +20,45 @@ const id = (el: HTMLElement) => (el.getElementsByClassName("ctform")[0] as HTMLF
 
 let currentPosts: HTMLElement | null;
 let elements: HTMLElement[];
+
+function reconcilePosts(doc: Document) {
+	const updatedPosts = doc.getElementById("posts");
+	if (currentPosts && updatedPosts) {
+		const lastPost = <HTMLElement> currentPosts.children[0];
+		if (!lastPost) return;
+		const lastId = id(lastPost);
+
+		const n: HTMLElement[] = [];
+		for (const post of updatedPosts.children as HTMLCollectionOf<HTMLElement>) {
+			if (id(post) == lastId) break;
+			n.push(post);
+		}
+
+		if (n.length) {
+			currentPosts.prepend(...n);
+			console.debug("[update-page]", "new posts", n.length, n);
+		}
+
+		for (let i = 0; i < currentPosts.children.length; i++) {
+			const current = currentPosts.children[i + n.length];
+			const updated = updatedPosts.children[i];
+			if (!updated) continue;
+
+			const [currentCt] = current.getElementsByClassName("post-author-colonthree") as HTMLCollectionOf<HTMLElement>;
+			const [updatedCt] = updated.getElementsByClassName("post-author-colonthree") as HTMLCollectionOf<HTMLElement>;
+
+			if ("scIgnore" in currentCt.dataset) {
+				delete currentCt.dataset.scIgnore;
+				continue;
+			}
+
+			if (currentCt.textContent !== updatedCt.textContent) {
+				currentCt.textContent = updatedCt.textContent;
+			}
+		}
+	}
+}
+
 async function update() {
 	const doc = await fetch(location.pathname)
 		.then((r) => r.text())
@@ -32,40 +71,8 @@ async function update() {
 	));
 
 	// Manual reconciliation for posts
-	try {
-		const updatedPosts = doc.getElementById("posts");
-		if (currentPosts && updatedPosts) {
-			const lastPost = <HTMLElement> currentPosts.children[0];
-			if (!lastPost) return;
-			const lastId = id(lastPost);
-
-			const n: HTMLElement[] = [];
-			for (const post of updatedPosts.children as HTMLCollectionOf<HTMLElement>) {
-				if (id(post) == lastId) break;
-				n.push(post);
-			}
-
-			if (n.length) {
-				currentPosts.prepend(...n);
-				console.debug("[update-page]", "new posts", n.length, n);
-			}
-
-			for (let i = 0; i < currentPosts.children.length; i++) {
-				const current = currentPosts.children[i + n.length];
-				const updated = updatedPosts.children[i];
-				if (!updated) continue;
-
-				const currentCt = current.getElementsByClassName("post-author-colonthree")[0];
-				const updatedCt = updated.getElementsByClassName("post-author-colonthree")[0];
-
-				if (currentCt.textContent !== updatedCt.textContent) {
-					currentCt.textContent = updatedCt.textContent;
-				}
-			}
-		}
-	} finally {
-		setTimeout(update, 2000);
-	}
+	reconcilePosts(doc);
+	setTimeout(update, 2000);
 }
 
 export default () =>
