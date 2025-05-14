@@ -1,37 +1,83 @@
-// @ts-check
 import * as esbuild from "esbuild";
+import fs from "node:fs/promises";
+import http from "node:http";
+import path from "node:path";
 
-const meta = `
-// ==UserScript==
-// @name        sillypost userscript
-// @description automatic timeline updating, and more soon:tm:
-// @version     0.1.9
-// @match       https://sillypost.net/
-// @homepageURL https://github.com/redstonekasi/sillypost
-// @downloadURL https://things.k6.tf/sillypost.user.js
-// ==/UserScript==
-`.trim();
+// Sometimes I really hate esbuild.
+
+const metadata = (file) => ({
+	name: "metadata",
+	setup(build) {
+		build.initialOptions.write = false;
+
+		build.onResolve({
+			filter: new RegExp(RegExp.escape(build.initialOptions.entryPoints[0])),
+		}, (args) => {
+			if (args.kind !== "entry-point") return;
+			return {
+				path: path.resolve(args.resolveDir, args.path),
+				watchFiles: [file],
+			};
+		});
+
+		build.onEnd(async (res) => {
+			if (res?.outputFiles > 1) throw new Error("userscript may not emit multiple files");
+			const out = res.outputFiles?.[0];
+			if (!out?.contents) return;
+
+			const meta = await fs.readFile(file);
+			out.contents = Buffer.concat([meta, out.contents]);
+
+			await fs.mkdir(path.dirname(out.path), { recursive: true });
+			await fs.writeFile(out.path, out.contents);
+		});
+	},
+});
+
+const serve = (port, location) => ({
+	name: "serve",
+	setup(build) {
+		if (!dev) return;
+
+		let buffer;
+		const server = http.createServer((req, res) => {
+			if (req.url != location) {
+				res.writeHead(307, { location });
+				return res.end();
+			}
+
+			res.writeHead(200, {
+				"content-length": buffer.length,
+				"content-type": "text/javascript",
+			});
+			res.end(buffer);
+		});
+
+		server.listen(port, "::1");
+
+		build.onEnd((res) => {
+			const out = res.outputFiles?.[0];
+			if (!out?.contents) return;
+			buffer = out.contents;
+		});
+	},
+});
 
 const dev = process.argv.includes("--dev");
-const out = "./dist/sillypost.user.js";
 
 const ctx = await esbuild.context({
 	entryPoints: ["./src/index.ts"],
-	outfile: out,
-	minify: true,
+	outfile: "./dist/sillypost.user.js",
 	bundle: true,
-	loader: { ".css": "text" },
-	legalComments: "none",
-	banner: { js: meta },
-	logLevel: "info",
+	plugins: [
+		metadata("metadata.txt"),
+		serve(8080, "/sillypost.user.js"),
+	],
 });
 
 if (dev) {
 	await ctx.watch();
-	await ctx.serve({
-		host: "::1",
-		port: 8080,
-	});
+	console.log(" > \x1b[36mhttp://[::1]:8080/sillypost.user.js\x1b[39m");
 } else {
 	await ctx.rebuild();
 	await ctx.dispose();

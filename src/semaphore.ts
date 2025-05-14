@@ -1,23 +1,23 @@
-class Semaphore {
-	private queue_: Function[] = [];
-	private lock_ = false;
+export class Semaphore {
+	private queue: Function[] = [];
+	private lock = false;
 
 	acquire(): Promise<void> {
-		if (!this.lock_) {
-			this.lock_ = true;
+		if (!this.lock) {
+			this.lock = true;
 			return Promise.resolve();
 		} else {
-			return new Promise((resolve) => this.queue_.push(resolve));
+			return new Promise((resolve) => this.queue.push(resolve));
 		}
 	}
 
 	release(): void {
-		const resolve = this.queue_.shift();
+		const resolve = this.queue.shift();
 
 		if (resolve) {
 			setTimeout(resolve, 0);
 		} else {
-			this.lock_ = false;
+			this.lock = false;
 		}
 	}
 
@@ -30,5 +30,3 @@ class Semaphore {
 		}
 	}
 }
-
-export { Semaphore };

@@ -1,0 +1,2 @@
+patchedDependencies:
+  micromorph: patches/micromorph.patch

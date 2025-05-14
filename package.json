@@ -1,7 +1,8 @@
 {
-  "devDependencies": {
-    "@types/node": "^22.15.17",
-    "@types/uglify-js": "^3.17.5",
-    "esbuild": "^0.25.4"
-  }
+	"devDependencies": {
+		"esbuild": "^0.25.4"
+	},
+	"dependencies": {
+		"micromorph": "^0.4.5"
+	}
 }

@@ -1,0 +1,6 @@
+// ==UserScript==
+// @name        sillyscript
+// @description various qol features for sillypost
+// @version     0.2.0
+// @match       https://sillypost.net/*
+// ==/UserScript==
