@@ -67,18 +67,18 @@ const dev = process.argv.includes("--dev");
 
 const ctx = await esbuild.context({
 	entryPoints: ["./src/index.ts"],
-	outfile: "./dist/sillypost.user.js",
+	outfile: "./dist/sillyscript.user.js",
 	bundle: true,
 	minify: true,
 	plugins: [
 		metadata("metadata.txt"),
-		serve(8080, "/sillypost.user.js"),
+		serve(8080, "/sillyscript.user.js"),
 	],
 });
 
 if (dev) {
 	await ctx.watch();
-	console.log(" > \x1b[36mhttp://[::1]:8080/sillypost.user.js\x1b[39m");
+	console.log(" > \x1b[36mhttp://[::1]:8080/sillyscript.user.js\x1b[39m");
 } else {
 	await ctx.rebuild();
 	await ctx.dispose();

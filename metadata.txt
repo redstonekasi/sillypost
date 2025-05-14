@@ -3,4 +3,5 @@
 // @description various qol features for sillypost
 // @version     0.2.0
 // @match       https://sillypost.net/*
+// @downloadURL https://redstonekasi.github.io/sillyscript/sillyscript.user.js
 // ==/UserScript==
