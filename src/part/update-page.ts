@@ -49,6 +49,19 @@ async function update() {
 				currentPosts.prepend(...n);
 				console.debug("[update-page]", "new posts", n.length, n);
 			}
+
+			for (let i = 0; i < currentPosts.children.length; i++) {
+				const current = currentPosts.children[i + n.length];
+				const updated = updatedPosts.children[i];
+				if (!updated) continue;
+
+				const currentCt = current.getElementsByClassName("post-author-colonthree")[0];
+				const updatedCt = updated.getElementsByClassName("post-author-colonthree")[0];
+
+				if (currentCt.textContent !== updatedCt.textContent) {
+					currentCt.textContent = updatedCt.textContent;
+				}
+			}
 		}
 	} finally {
 		setTimeout(update, 2000);
