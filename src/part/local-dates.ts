@@ -11,6 +11,6 @@ export default () =>
 		const match = el.textContent?.match(utcRegex);
 		if (!match) return;
 		const [, year, month, day, hour, minute] = match;
-		const date = Date.UTC(+year, +month, +day, +hour, +minute);
+		const date = Date.UTC(+year, +month - 1, +day, +hour, +minute);
 		el.textContent = formatter.format(date);
 	});
