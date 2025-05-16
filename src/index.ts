@@ -1,7 +1,8 @@
-import { definePart, executeAllParts } from "./part";
+import { defineOptionalPart, definePart, executeAllParts } from "./part";
 import fastCtform from "./part/fast-ctform";
 import fastSubmit from "./part/fast-submit";
 import localDates from "./part/local-dates";
+import settings from "./part/settings";
 import updatePage from "./part/update-page";
 import * as r from "./routes";
 
@@ -13,9 +14,11 @@ const WITH_POSTS = [
 	r.GROUP_FEED,
 ];
 
-definePart(WITH_POSTS, fastCtform);
-definePart(WITH_POSTS, localDates);
-definePart([r.INDEX, r.GROUP_FEED], fastSubmit);
-definePart([r.GLOBAL], updatePage);
+defineOptionalPart("fastCtform", fastCtform, WITH_POSTS);
+defineOptionalPart("localDates", localDates, WITH_POSTS);
+defineOptionalPart("fastSubmit", fastSubmit, [r.INDEX, r.GROUP_FEED]);
+defineOptionalPart("updatePage", updatePage, [r.GLOBAL]);
+
+definePart(settings, [r.SETTINGS]);
 
 executeAllParts();

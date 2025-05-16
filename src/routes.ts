@@ -16,3 +16,4 @@ export const INDEX = compileRoute("/");
 export const OWN_PROFILE = compileRoute("/profile");
 export const USER_PROFILE = compileRoute("/user/:user");
 export const GROUP_FEED = compileRoute("/group/:group/feed");
+export const SETTINGS = compileRoute("/settings");

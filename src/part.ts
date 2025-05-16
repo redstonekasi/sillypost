@@ -1,6 +1,8 @@
+import { getOptionValue, type OptionId } from "./options";
+
 type PartExecutor = () => unknown;
 const registered = new Map<RegExp, Set<PartExecutor>>();
-export function definePart(routes: RegExp[], execute: PartExecutor) {
+export function definePart(execute: PartExecutor, routes: RegExp[]) {
 	for (const route of routes) {
 		let ex = registered.get(route);
 		if (!ex) {
@@ -9,6 +11,10 @@ export function definePart(routes: RegExp[], execute: PartExecutor) {
 		}
 		ex.add(execute);
 	}
+}
+export function defineOptionalPart(option: OptionId, execute: PartExecutor, routes: RegExp[]) {
+	if (!getOptionValue(option)) return;
+	definePart(execute, routes);
 }
 
 export function executeAllParts() {
